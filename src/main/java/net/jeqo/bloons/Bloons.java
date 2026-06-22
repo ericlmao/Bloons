@@ -1,5 +1,6 @@
 package net.jeqo.bloons;
 
+import gg.moonrise.scheduler.Scheduler;
 import lombok.Getter;
 import lombok.Setter;
 import net.jeqo.bloons.balloon.BalloonCore;
@@ -59,6 +60,7 @@ public final class Bloons extends JavaPlugin {
     public void onEnable() {
         // Create an instance of the plugin
         setInstance(this);
+        Scheduler.init(this);
 
         // Send initial startup message
         Logger.logInitialStartup();

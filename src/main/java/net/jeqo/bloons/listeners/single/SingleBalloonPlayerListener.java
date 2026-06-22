@@ -1,5 +1,6 @@
 package net.jeqo.bloons.listeners.single;
 
+import gg.moonrise.scheduler.Scheduler;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
 import net.jeqo.bloons.management.SingleBalloonManagement;
@@ -8,7 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -74,20 +74,12 @@ public class SingleBalloonPlayerListener implements Listener {
 
             final String finalOverride = overrideColor;
             if (balloonID != null) {
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        SingleBalloon.checkBalloonRemovalOrAdd(player, balloonID, finalOverride);
-                    }
-                }.runTaskLater(Bloons.getInstance(), 1L);
+                Scheduler.entity(player).runDelayed(task ->
+                        SingleBalloon.checkBalloonRemovalOrAdd(player, balloonID, finalOverride), 1L);
             }
         } else if (balloonID != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    SingleBalloon.checkBalloonRemovalOrAdd(player, balloonID, overrideColor);
-                }
-            }.runTaskLater(Bloons.getInstance(), 1L);
+            Scheduler.entity(player).runDelayed(task ->
+                    SingleBalloon.checkBalloonRemovalOrAdd(player, balloonID, overrideColor), 1L);
         }
     }
 }

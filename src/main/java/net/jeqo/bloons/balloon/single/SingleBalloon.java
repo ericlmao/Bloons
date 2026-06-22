@@ -1,5 +1,7 @@
 package net.jeqo.bloons.balloon.single;
 
+import gg.moonrise.scheduler.Scheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.Getter;
 import lombok.Setter;
 import net.jeqo.bloons.Bloons;
@@ -20,7 +22,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
@@ -29,12 +30,13 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter @Setter
-public class SingleBalloon extends BukkitRunnable {
+public class SingleBalloon {
     /** Must have variables related to any balloon **/
     private SingleBalloonType type;
     private Player player;
     private ArmorStand armorStand;
     public Chicken chicken;
+    private ScheduledTask task;
 
     /**
      * Only used for non-MEG balloons to configure the visual appearance of the balloon
@@ -246,12 +248,20 @@ public class SingleBalloon extends BukkitRunnable {
      * @throws IllegalStateException    If the task has already been cancelled
      */
     public synchronized void cancel() throws IllegalStateException {
+        if (this.getTask() != null) {
+            this.getTask().cancel();
+            this.setTask(null);
+        }
         if (this.hasMEGModel && this.getMegHandler() != null) {
             this.getMegHandler().destroy();
         }
-        this.getArmorStand().remove();
-        this.getChicken().remove();
-        super.cancel();
+        if (this.getArmorStand() != null) this.getArmorStand().remove();
+        if (this.getChicken() != null) this.getChicken().remove();
+    }
+
+    public void start() {
+        if (this.getTask() != null) this.getTask().cancel();
+        this.setTask(Scheduler.entity(this.getPlayer()).schedule(task -> this.run(), 1L, 1L));
     }
 
     /**
@@ -361,22 +371,20 @@ public class SingleBalloon extends BukkitRunnable {
      * @param overrideColor Optional hex color override (e.g. "#RRGGBB")
      */
     public static void checkBalloonRemovalOrAdd(final Player player, final String balloonID, final String overrideColor) {
-        new BukkitRunnable() {
-            public void run() {
-                // Gets and checks if the player has a balloon already
-                SingleBalloon initialBalloon = Bloons.getPlayerSingleBalloons().get(player.getUniqueId());
-                if (initialBalloon != null) return;
+        Scheduler.entity(player).runDelayed(task -> {
+            // Gets and checks if the player has a balloon already
+            SingleBalloon initialBalloon = Bloons.getPlayerSingleBalloons().get(player.getUniqueId());
+            if (initialBalloon != null) return;
 
-                // Remove the balloon from the player
-                SingleBalloonManagement.removeBalloon(player, null);
+            // Remove the balloon from the player
+            SingleBalloonManagement.removeBalloon(player, null);
 
-                // Create a new balloon and add it to the player/start the runnables and add the player to the maps
-                SingleBalloon balloon = new SingleBalloon(player, balloonID, overrideColor);
-                balloon.runTaskTimer(Bloons.getInstance(), 0L, 1L);
-                Bloons.getPlayerSingleBalloons().put(player.getUniqueId(), balloon);
-                Bloons.getPlayerSingleBalloonID().put(player.getUniqueId(), balloonID);
+            // Create a new balloon and add it to the player/start the runnables and add the player to the maps
+            SingleBalloon balloon = new SingleBalloon(player, balloonID, overrideColor);
+            balloon.start();
+            Bloons.getPlayerSingleBalloons().put(player.getUniqueId(), balloon);
+            Bloons.getPlayerSingleBalloonID().put(player.getUniqueId(), balloonID);
 
-            }
-        }.runTaskLater(Bloons.getInstance(), 1L);
+        }, 1L);
     }
 }

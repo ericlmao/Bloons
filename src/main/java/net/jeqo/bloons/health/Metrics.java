@@ -14,6 +14,7 @@
  */
 package net.jeqo.bloons.health;
 
+import gg.moonrise.scheduler.Scheduler;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -101,7 +102,7 @@ public class Metrics {
                         enabled,
                         this::appendPlatformData,
                         this::appendServiceData,
-                        submitDataTask -> Bukkit.getScheduler().runTask(plugin, submitDataTask),
+                        submitDataTask -> Scheduler.sync().run(task -> submitDataTask.run()),
                         plugin::isEnabled,
                         (message, error) -> this.plugin.getLogger().log(Level.WARNING, message, error),
                         (message) -> this.plugin.getLogger().log(Level.INFO, message),

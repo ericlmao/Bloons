@@ -1,17 +1,16 @@
 package net.jeqo.bloons.gui;
 
+import gg.moonrise.scheduler.Scheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.jeqo.bloons.item.NBTItem;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 
 /**
  * An abstract class that represents a GUI instance
  */
 public abstract class GUI {
-    BukkitTask updater;
+    ScheduledTask updater;
 
     /**
      *          The inventory that is displayed to the player
@@ -74,10 +73,10 @@ public abstract class GUI {
     /**
      *                  Starts the GUI updater to update the GUI every 20 ticks
      *                  This should be executed upon the opening of the GUI
-     * @param plugin    The plugin that the GUI is being opened in
+     * @param player    The player that owns the GUI update task
      */
-    public void startUpdater(JavaPlugin plugin) {
-        this.updater = Bukkit.getScheduler().runTaskTimer(plugin, this::update, 0, 20);
+    public void startUpdater(Player player) {
+        this.updater = Scheduler.entity(player).schedule(task -> this.update(), 1L, 20L);
     }
 
     /**
@@ -85,7 +84,9 @@ public abstract class GUI {
      * This should be executed upon the closing of the GUI
      */
     public void stopUpdater() {
+        if (this.updater == null) return;
         this.updater.cancel();
+        this.updater = null;
     }
 
     /**

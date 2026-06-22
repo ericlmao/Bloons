@@ -1,15 +1,15 @@
 package net.jeqo.bloons.balloon.multipart.balloon;
 
+import gg.moonrise.scheduler.Scheduler;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import lombok.Getter;
 import lombok.Setter;
-import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
 import net.jeqo.bloons.balloon.multipart.nodes.MultipartBalloonNode;
 import net.jeqo.bloons.configuration.BalloonConfiguration;
 import org.bukkit.Location;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class MultipartBalloon {
      * The runnable that is used to constantly update the balloons' position
      */
     @Setter
-    private BukkitRunnable runnable;
+    private ScheduledTask runnable;
     /**
      * The list of model nodes that are used to create the balloon
      */
@@ -148,60 +148,53 @@ public class MultipartBalloon {
         double noseAmplitude = this.getType().getPassiveNoseSineWaveAmplitude(); // Adjust how much the nose of the first node goes up and down
 
         final boolean[] isInitialized = {false};
+        final double[] yOffset = {0};
 
-        this.setRunnable(new BukkitRunnable() {
-            double yOffset = 0; // Initial offset for the sine curve
+        this.setRunnable(Scheduler.entity(this.getOwner()).schedule(task -> {
+            // Gets the constantly updated owners location
+            Location balloonOwnerLocation = getOwner().getLocation();
 
-            @Override
-            public void run() {
-                // Gets the constantly updated owners location
-                Location balloonOwnerLocation = getOwner().getLocation();
+            // Calculate the Y offset using a sine function with adjusted amplitude
+            double sinValue = Math.sin(yOffset[0]);
+            double newY = balloonOwnerLocation.getY() + 2 + amplitude * sinValue; // Adjust the amplitude and offset as needed
 
-                // Calculate the Y offset using a sine function with adjusted amplitude
-                double sinValue = Math.sin(yOffset);
-                double newY = balloonOwnerLocation.getY() + 2 + amplitude * sinValue; // Adjust the amplitude and offset as needed
+            // Adjust the nose amplitude based on the sine value
+            double noseOffset = noseAmplitude * sinValue;
 
-                // Adjust the nose amplitude based on the sine value
-                double noseOffset = noseAmplitude * sinValue;
+            // Calculate the midpoint between Point A and Point B in the leading balloon
+            double midpointX = (getTentacle().getPointA().x + getTentacle().getPointB().x) / 2.0;
+            double midpointZ = (getTentacle().getPointA().z + getTentacle().getPointB().z) / 2.0;
 
-                // Calculate the midpoint between Point A and Point B in the leading balloon
-                double midpointX = (getTentacle().getPointA().x + getTentacle().getPointB().x) / 2.0;
-                double midpointZ = (getTentacle().getPointA().z + getTentacle().getPointB().z) / 2.0;
+            // Constantly teleport the balloons
+            getTentacle().follow((float) balloonOwnerLocation.getX(), (float) (newY + noseOffset), (float) balloonOwnerLocation.getZ());
+            getTentacle().display();
 
-                // Constantly teleport the balloons
-                getTentacle().follow((float) balloonOwnerLocation.getX(), (float) (newY + noseOffset), (float) balloonOwnerLocation.getZ());
-                getTentacle().display();
+            // Make the other segments follow
+            MultipartBalloonNode next = getTentacle().getParent();
+            while (next != null) {
+                next.follow();
+                next.display();
 
-                // Make the other segments follow
-                MultipartBalloonNode next = getTentacle().getParent();
-                while (next != null) {
-                    next.follow();
-                    next.display();
-
-                    next = next.getParent();
-                }
-
-                // Increment the yOffset based on the speed for the next iteration
-                yOffset += speed; // Adjust the speed of the sine wave as needed
-
-                // Checks if it's done initializing the fall down/up animation and sets it to true
-                if (balloonOwnerLocation.distance(new Location(balloonOwnerLocation.getWorld(), getTentacle().getPointA().x, getTentacle().getPointA().y, getTentacle().getPointA().z)) > 2) {
-                    isInitialized[0] = true;
-                }
-
-                // If it's done initialized and isn't far away, add the lead and constantly teleport it to
-                // not break the lead
-                if (isInitialized[0]) {
-                    // Teleport the chicken holding the leash constantly
-                    Location leadTeleportPoint = new Location(getOwner().getWorld(), midpointX, getTentacle().getPointA().y + type.getLeashHeight(), midpointZ);
-                    getChicken().teleport(leadTeleportPoint);
-                    getChicken().setLeashHolder(getOwner());
-                }
+                next = next.getParent();
             }
-        });
 
-        // Constantly run the runnable with the specified time in ticks
-        this.getRunnable().runTaskTimer(Bloons.getInstance(), timeInTicks, timeInTicks);
+            // Increment the yOffset based on the speed for the next iteration
+            yOffset[0] += speed; // Adjust the speed of the sine wave as needed
+
+            // Checks if it's done initializing the fall down/up animation and sets it to true
+            if (balloonOwnerLocation.distance(new Location(balloonOwnerLocation.getWorld(), getTentacle().getPointA().x, getTentacle().getPointA().y, getTentacle().getPointA().z)) > 2) {
+                isInitialized[0] = true;
+            }
+
+            // If it's done initialized and isn't far away, add the lead and constantly teleport it to
+            // not break the lead
+            if (isInitialized[0]) {
+                // Teleport the chicken holding the leash constantly
+                Location leadTeleportPoint = new Location(getOwner().getWorld(), midpointX, getTentacle().getPointA().y + type.getLeashHeight(), midpointZ);
+                getChicken().teleport(leadTeleportPoint);
+                getChicken().setLeashHolder(getOwner());
+            }
+        }, timeInTicks, timeInTicks));
     }
 
     /**
