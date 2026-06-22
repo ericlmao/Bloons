@@ -1,5 +1,6 @@
 package net.jeqo.bloons.listeners.multipart;
 
+import gg.moonrise.scheduler.Scheduler;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
 import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloon;
@@ -13,7 +14,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
@@ -95,18 +95,15 @@ public class MultipartBalloonPlayerListener implements Listener {
         balloon.destroy();
         MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
+        Scheduler.entity(player).runDelayed(task -> {
+            SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
 
-                MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, player);
-                MultipartBalloon newBalloon = builder.build();
-                newBalloon.initialize();
-                newBalloon.run();
+            MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, player);
+            MultipartBalloon newBalloon = builder.build();
+            newBalloon.initialize();
+            newBalloon.run();
 
-                MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), newBalloon);
-            }
-        }.runTaskLater(Bloons.getInstance(), 1L);
+            MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), newBalloon);
+        }, 1L);
     }
 }

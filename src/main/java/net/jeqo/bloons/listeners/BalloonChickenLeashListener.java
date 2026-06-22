@@ -1,5 +1,6 @@
 package net.jeqo.bloons.listeners;
 
+import gg.moonrise.scheduler.Scheduler;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
 import net.jeqo.bloons.configuration.BalloonConfiguration;
@@ -48,7 +49,7 @@ public class BalloonChickenLeashListener implements Listener {
 
         org.bukkit.entity.Entity holder = living.getLeashHolder();
 
-        org.bukkit.Bukkit.getScheduler().runTask(Bloons.getInstance(), () -> {
+        Scheduler.entity(living).run(task -> {
             java.util.Optional<org.bukkit.entity.Item> lead = living.getNearbyEntities(15.0, 15.0, 15.0).stream()
                     .filter(e -> e instanceof org.bukkit.entity.Item)
                     .map(e -> (org.bukkit.entity.Item) e)

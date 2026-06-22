@@ -89,7 +89,7 @@ public class GUICore {
         // Open the GUI and start a task to update the GUI every 20 ticks
         gui.open(player);
         player.openInventory(gui.inventory());
-        gui.startUpdater(this.getPlugin());
+        gui.startUpdater(player);
     }
 
     /**

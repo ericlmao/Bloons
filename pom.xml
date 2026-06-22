@@ -22,7 +22,8 @@
     </distributionManagement>
 
     <properties>
-        <java.version>1.21</java.version>
+        <java.version>21</java.version>
+        <lombok.version>1.18.46</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -33,14 +34,21 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>16</source>
-                    <target>16</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -49,6 +57,12 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>gg.moonrise.scheduler</pattern>
+                                    <shadedPattern>net.jeqo.bloons.libs.foliascheduler</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
@@ -89,6 +103,14 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>moonrise-releases</id>
+            <url>https://repo.moonrise.gg/repository/maven-releases</url>
+        </repository>
+        <repository>
+            <id>moonrise-snapshots</id>
+            <url>https://repo.moonrise.gg/repository/maven-snapshots</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -108,12 +130,17 @@
             <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>gg.moonrise.scheduler</groupId>
+            <artifactId>folia-scheduler</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!--   Java related dependencies     -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

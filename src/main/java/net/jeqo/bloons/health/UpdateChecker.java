@@ -1,6 +1,6 @@
 package net.jeqo.bloons.health;
 
-import org.bukkit.Bukkit;
+import gg.moonrise.scheduler.Scheduler;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +20,7 @@ public record UpdateChecker(JavaPlugin plugin, int resourceId) {
      * @param consumer  The consumer to accept the version, type java.util.function.Consumer[java.lang.String]
      */
     public void getVersion(final Consumer<String> consumer) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin(), () -> {
+        Scheduler.async().run(task -> {
             try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId()).openStream(); Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
                     consumer.accept(scanner.next());
