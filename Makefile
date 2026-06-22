@@ -4,7 +4,7 @@ SERVICE_PREFIX = jeqo-
 SERVER_SUFFIX = -server
 
 # Building details
-BUILD_OUTPUT = target/*.jar
+BUILD_OUTPUT = build/libs/*.jar
 BUILD_SERVER = dev-server
 TARGET_PLUGIN_DIR = dev/plugins/
 TARGET_PAPER_DIR = dev-paper/plugins/
@@ -74,9 +74,9 @@ send-command:
 	docker exec $(SERVICE_PREFIX)$(container) rcon-cli $(command)
 
 pbuild:
-	mvn clean package
+	./gradlew clean build
 	@mkdir -p $(TARGET_PLUGIN_DIR)
 	@mkdir -p $(TARGET_PAPER_DIR)
-	find $(BUILD_OUTPUT) -type f ! -name 'original-*' -exec cp {} $(TARGET_PLUGIN_DIR) \;
-	find $(BUILD_OUTPUT) -type f ! -name 'original-*' -exec cp {} $(TARGET_PAPER_DIR) \;
+	find $(BUILD_OUTPUT) -type f ! -name '*-plain.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' -exec cp {} $(TARGET_PLUGIN_DIR) \;
+	find $(BUILD_OUTPUT) -type f ! -name '*-plain.jar' ! -name '*-sources.jar' ! -name '*-javadoc.jar' -exec cp {} $(TARGET_PAPER_DIR) \;
 	make send-command container=$(BUILD_SERVER) command="reload confirm"
