@@ -21,6 +21,6 @@ public class MultipartBalloonPlayerLeaveListener implements Listener {
 
         if (playerBalloon == null) return;
 
-        playerBalloon.destroy();
+        MultipartBalloonManagement.storePlayerBalloon(event.getPlayer().getUniqueId());
     }
 }

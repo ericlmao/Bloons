@@ -3,6 +3,7 @@ package net.jeqo.bloons.listeners.single;
 import gg.moonrise.scheduler.Scheduler;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import net.jeqo.bloons.management.SingleBalloonManagement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -52,9 +53,12 @@ public class SingleBalloonPlayerListener implements Listener {
 
         SingleBalloonManagement.storeBalloon(balloonOwner);
 
-        if (balloonID != null) {
-            SingleBalloonManagement.removeBalloon(event.getPlayer(), Bloons.getPlayerSingleBalloons().get(event.getPlayer().getUniqueId()));
+        if (!ConfigConfiguration.canSpawnBalloonsInWorld(event.getPlayer().getWorld())) return;
 
+        if (balloonOwner != null) {
+            Scheduler.entity(event.getPlayer()).runDelayed(task ->
+                    SingleBalloonManagement.restoreBalloon(event.getPlayer(), balloonOwner), 1L);
+        } else if (balloonID != null) {
             SingleBalloon.checkBalloonRemovalOrAdd(event.getPlayer(), balloonID);
         }
     }
@@ -67,6 +71,10 @@ public class SingleBalloonPlayerListener implements Listener {
 
         String balloonID = Bloons.getPlayerSingleBalloonID().get(player.getUniqueId());
         String overrideColor = balloon.getOverrideColor();
+        if (event.getTo() != null && !ConfigConfiguration.canSpawnBalloonsInWorld(event.getTo().getWorld())) {
+            SingleBalloonManagement.storeBalloon(balloon);
+            return;
+        }
 
         if (balloon.getChicken() != null) {
             SingleBalloonManagement.storeBalloon(balloon);

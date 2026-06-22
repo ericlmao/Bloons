@@ -3,6 +3,7 @@ package net.jeqo.bloons.listeners.multipart;
 import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloon;
 import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloonBuilder;
 import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import net.jeqo.bloons.management.MultipartBalloonManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,7 +43,8 @@ public class MultipartBalloonPlayerJoinListener implements Listener {
 
         MultipartBalloon playerBalloon = builder.build();
         MultipartBalloonManagement.setPlayerBalloon(uuid, playerBalloon);
-        playerBalloon.initialize();
-        playerBalloon.run();
+        if (ConfigConfiguration.canSpawnBalloonsInWorld(event.getPlayer().getWorld())) {
+            MultipartBalloonManagement.restorePlayerBalloon(uuid);
+        }
     }
 }

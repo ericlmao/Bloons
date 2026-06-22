@@ -8,6 +8,7 @@ import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
 import net.jeqo.bloons.balloon.single.SingleBalloonType;
 import net.jeqo.bloons.logger.Logger;
 import net.jeqo.bloons.message.Languages;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +24,8 @@ import java.util.stream.Stream;
  * A class that contains configurations for the plugin configuration file
  */
 public class ConfigConfiguration {
+    public static final String WORLD_WHITELIST_PATH = "world-whitelist";
+
     /**
      * The folder that stores the balloons to be loaded
      */
@@ -34,6 +37,29 @@ public class ConfigConfiguration {
 
     @Getter
     private static final String balloonConfigurationFolder = Bloons.getInstance().getDataFolder() + File.separator + BALLOON_CONFIGURATION_FOLDER;
+
+    /**
+     *          Checks if balloons are allowed to spawn in the provided world.
+     * @param world The world to check, type org.bukkit.World
+     * @return      True if the whitelist is empty, contains "*", or contains the world name
+     */
+    public static boolean canSpawnBalloonsInWorld(World world) {
+        if (world == null) return false;
+
+        List<String> whitelistedWorlds = Bloons.getInstance().getConfig().getStringList(WORLD_WHITELIST_PATH);
+        if (whitelistedWorlds.isEmpty()) return true;
+
+        for (String whitelistedWorld : whitelistedWorlds) {
+            if (whitelistedWorld == null) continue;
+
+            String normalizedWorld = whitelistedWorld.trim();
+            if (normalizedWorld.isEmpty()) continue;
+            if (normalizedWorld.equals("*")) return true;
+            if (normalizedWorld.equalsIgnoreCase(world.getName())) return true;
+        }
+
+        return false;
+    }
 
     /**
      *          Checks if the server is running Paper
