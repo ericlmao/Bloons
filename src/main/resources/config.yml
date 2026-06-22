@@ -24,6 +24,8 @@ close-on-equip: true
 close-on-unequip: true
 # Do you want to hide balloons that the player does not have permission for?
 hide-balloons-without-permission: true
+# Worlds where equipped balloons are allowed to spawn. Leave empty to allow all worlds.
+world-whitelist: []
 # Title for the balloons menu.
 menu-title: "&f"
 # Amount of slots per page. Valid values: 27, 36, 45, and 54. 9 of these slots will be used for the menu buttons.

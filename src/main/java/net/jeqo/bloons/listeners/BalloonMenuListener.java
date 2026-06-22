@@ -64,19 +64,16 @@ public class BalloonMenuListener implements Listener {
             MultipartBalloonType type = Bloons.getBalloonCore().getMultipartBalloonByID(localizedName);
             MultipartBalloon previousBalloon = MultipartBalloonManagement.getPlayerBalloon(player.getUniqueId());
             if (previousBalloon != null) {
-                previousBalloon.destroy();
                 MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
             }
 
-            MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, player);
             SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
             if (type != null) {
+                MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, player);
                 MultipartBalloon balloon = builder.build();
 
-                balloon.initialize();
-                balloon.run();
-
                 MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), balloon);
+                MultipartBalloonManagement.restorePlayerBalloon(player.getUniqueId());
             } else {
                 // Check if a balloon needs to be added or removed
                 SingleBalloon.checkBalloonRemovalOrAdd(player, balloonId);
@@ -150,7 +147,6 @@ public class BalloonMenuListener implements Listener {
                     if (multipartBalloon != null) {
                         if (messageTranslations.getString("close-on-unequip").equals("true")) player.closeInventory();
 
-                        multipartBalloon.destroy();
                         MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
 
                         // Play sound and send message saying the balloon is unequipped

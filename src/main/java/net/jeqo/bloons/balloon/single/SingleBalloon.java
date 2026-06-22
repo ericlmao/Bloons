@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.configuration.BalloonConfiguration;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import net.jeqo.bloons.logger.Logger;
 import net.jeqo.bloons.message.Languages;
 import net.jeqo.bloons.management.SingleBalloonManagement;
@@ -179,6 +180,11 @@ public class SingleBalloon {
      * the control center of the core functionality of how the balloon moves
      */
     public void run() {
+        if (!ConfigConfiguration.canSpawnBalloonsInWorld(this.getPlayer().getWorld())) {
+            SingleBalloonManagement.storeBalloon(this);
+            return;
+        }
+
         // If the balloon armor stand is null, initialize the balloon
         if (this.getArmorStand() == null) initializeBalloon();
 
@@ -254,9 +260,17 @@ public class SingleBalloon {
         }
         if (this.hasMEGModel && this.getMegHandler() != null) {
             this.getMegHandler().destroy();
+            this.setMegHandler(null);
+            this.setHasMEGModel(false);
         }
-        if (this.getArmorStand() != null) this.getArmorStand().remove();
-        if (this.getChicken() != null) this.getChicken().remove();
+        if (this.getArmorStand() != null) {
+            this.getArmorStand().remove();
+            this.setArmorStand(null);
+        }
+        if (this.getChicken() != null) {
+            this.getChicken().remove();
+            this.setChicken(null);
+        }
     }
 
     public void start() {
@@ -268,9 +282,14 @@ public class SingleBalloon {
      * Spawns the particle effect when the balloon is removed
      */
     public void spawnRemoveParticle() {
+        if (this.getMoveLocation() == null) return;
         if (this.getMoveLocation().getWorld() == null) return;
 
         this.getMoveLocation().getWorld().spawnParticle(Particle.CLOUD, this.getMoveLocation(), 5, 0.0D, 0.0D, 0.0D, 0.1D);
+    }
+
+    public boolean isSpawned() {
+        return this.getTask() != null || this.getArmorStand() != null || this.getChicken() != null;
     }
 
     /**
@@ -374,16 +393,25 @@ public class SingleBalloon {
         Scheduler.entity(player).runDelayed(task -> {
             // Gets and checks if the player has a balloon already
             SingleBalloon initialBalloon = Bloons.getPlayerSingleBalloons().get(player.getUniqueId());
-            if (initialBalloon != null) return;
+            if (initialBalloon != null) {
+                if (ConfigConfiguration.canSpawnBalloonsInWorld(player.getWorld()) && !initialBalloon.isSpawned()) {
+                    initialBalloon.start();
+                } else if (!ConfigConfiguration.canSpawnBalloonsInWorld(player.getWorld())) {
+                    SingleBalloonManagement.storeBalloon(initialBalloon);
+                }
+                return;
+            }
 
             // Remove the balloon from the player
             SingleBalloonManagement.removeBalloon(player, null);
 
             // Create a new balloon and add it to the player/start the runnables and add the player to the maps
             SingleBalloon balloon = new SingleBalloon(player, balloonID, overrideColor);
-            balloon.start();
             Bloons.getPlayerSingleBalloons().put(player.getUniqueId(), balloon);
             Bloons.getPlayerSingleBalloonID().put(player.getUniqueId(), balloonID);
+            if (ConfigConfiguration.canSpawnBalloonsInWorld(player.getWorld())) {
+                balloon.start();
+            }
 
         }, 1L);
     }

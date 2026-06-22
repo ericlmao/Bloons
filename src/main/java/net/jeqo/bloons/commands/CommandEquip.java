@@ -123,7 +123,6 @@ public class CommandEquip extends Command {
         MultipartBalloonType type = multipartBalloonType;
         MultipartBalloon previousBalloon = MultipartBalloonManagement.getPlayerBalloon(player.getUniqueId());
         if (previousBalloon != null) {
-            previousBalloon.destroy();
             MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
         }
 
@@ -138,10 +137,9 @@ public class CommandEquip extends Command {
 
             SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
             MultipartBalloon balloon = builder.build();
-            balloon.initialize();
-            balloon.run();
 
             MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), balloon);
+            MultipartBalloonManagement.restorePlayerBalloon(player.getUniqueId());
 
             String equippedMessage = Languages.getMessage("prefix") + String.format(Languages.getMessage("equipped"), type.getName());
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', equippedMessage));

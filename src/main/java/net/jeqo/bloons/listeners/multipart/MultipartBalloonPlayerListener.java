@@ -4,7 +4,7 @@ import gg.moonrise.scheduler.Scheduler;
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
 import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloon;
-import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloonBuilder;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import net.jeqo.bloons.management.MultipartBalloonManagement;
 import net.jeqo.bloons.management.SingleBalloonManagement;
 import org.bukkit.entity.Player;
@@ -14,8 +14,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-
-import java.util.Objects;
 
 /**
  * A class that listens for player events related to multipart balloons and their management
@@ -28,9 +26,6 @@ public class MultipartBalloonPlayerListener implements Listener {
      */
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        MultipartBalloon balloon = Bloons.getPlayerMultipartBalloons().get(Objects.requireNonNull(event.getEntity().getPlayer()).getUniqueId());
-
-        balloon.destroy();
         MultipartBalloonManagement.removePlayerBalloon(event.getEntity().getUniqueId());
     }
 
@@ -45,10 +40,7 @@ public class MultipartBalloonPlayerListener implements Listener {
         if (previousBalloon == null) return;
 
         SingleBalloonManagement.removeBalloon(event.getPlayer(), Bloons.getPlayerSingleBalloons().get(event.getPlayer().getUniqueId()));
-        previousBalloon.initialize();
-        previousBalloon.run();
-
-        MultipartBalloonManagement.setPlayerBalloon(event.getPlayer().getUniqueId(), previousBalloon);
+        MultipartBalloonManagement.restorePlayerBalloon(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -58,20 +50,19 @@ public class MultipartBalloonPlayerListener implements Listener {
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
         MultipartBalloon balloon = Bloons.getPlayerMultipartBalloons().get(event.getPlayer().getUniqueId());
-        MultipartBalloon previousBalloon = Bloons.getPlayerMultipartBalloons().get(event.getPlayer().getUniqueId());
-        MultipartBalloonType type = previousBalloon.getType();
+        if (balloon == null) return;
 
-        if (balloon != null) {
-            balloon.destroy();
+        MultipartBalloonType type = balloon.getType();
+        if (type == null) {
             MultipartBalloonManagement.removePlayerBalloon(event.getPlayer().getUniqueId());
+            return;
+        }
 
-            MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, event.getPlayer());
+        MultipartBalloonManagement.storePlayerBalloon(event.getPlayer().getUniqueId());
+        if (ConfigConfiguration.canSpawnBalloonsInWorld(event.getPlayer().getWorld())) {
             SingleBalloonManagement.removeBalloon(event.getPlayer(), Bloons.getPlayerSingleBalloons().get(event.getPlayer().getUniqueId()));
-            MultipartBalloon newBalloon = builder.build();
-            newBalloon.initialize();
-            newBalloon.run();
-
-            MultipartBalloonManagement.setPlayerBalloon(event.getPlayer().getUniqueId(), newBalloon);
+            Scheduler.entity(event.getPlayer()).runDelayed(task ->
+                    MultipartBalloonManagement.restorePlayerBalloon(event.getPlayer().getUniqueId()), 1L);
         }
     }
 
@@ -87,23 +78,16 @@ public class MultipartBalloonPlayerListener implements Listener {
 
         MultipartBalloonType type = balloon.getType();
         if (type == null) {
-            balloon.destroy();
             MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
             return;
         }
 
-        balloon.destroy();
-        MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
+        MultipartBalloonManagement.storePlayerBalloon(player.getUniqueId());
+        if (event.getTo() != null && !ConfigConfiguration.canSpawnBalloonsInWorld(event.getTo().getWorld())) return;
 
         Scheduler.entity(player).runDelayed(task -> {
             SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
-
-            MultipartBalloonBuilder builder = new MultipartBalloonBuilder(type, player);
-            MultipartBalloon newBalloon = builder.build();
-            newBalloon.initialize();
-            newBalloon.run();
-
-            MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), newBalloon);
+            MultipartBalloonManagement.restorePlayerBalloon(player.getUniqueId());
         }, 1L);
     }
 }

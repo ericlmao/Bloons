@@ -7,6 +7,7 @@ import lombok.Setter;
 import net.jeqo.bloons.balloon.multipart.MultipartBalloonType;
 import net.jeqo.bloons.balloon.multipart.nodes.MultipartBalloonNode;
 import net.jeqo.bloons.configuration.BalloonConfiguration;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import org.bukkit.Location;
 import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
@@ -59,6 +60,8 @@ public class MultipartBalloon {
      * Initializes the balloons functionality
      */
     public void initialize() {
+        if (!ConfigConfiguration.canSpawnBalloonsInWorld(this.getOwner().getWorld())) return;
+
         // Create the first (tail) node higher than the player
         MultipartBalloonNode current = new MultipartBalloonNode(
                 (float) this.getOwner().getLocation().getX(),
@@ -138,6 +141,11 @@ public class MultipartBalloon {
      * Runs the balloons' functionality that needs to loop infinitely
      */
     public void run() {
+        if (!ConfigConfiguration.canSpawnBalloonsInWorld(this.getOwner().getWorld())) {
+            this.destroy();
+            return;
+        }
+
         // Ensure the previous runnable is canceled before creating a new one
         if (this.getRunnable() != null) this.getRunnable().cancel();
 
@@ -153,6 +161,10 @@ public class MultipartBalloon {
         this.setRunnable(Scheduler.entity(this.getOwner()).schedule(task -> {
             // Gets the constantly updated owners location
             Location balloonOwnerLocation = getOwner().getLocation();
+            if (!ConfigConfiguration.canSpawnBalloonsInWorld(balloonOwnerLocation.getWorld())) {
+                this.destroy();
+                return;
+            }
 
             // Calculate the Y offset using a sine function with adjusted amplitude
             double sinValue = Math.sin(yOffset[0]);
@@ -210,7 +222,10 @@ public class MultipartBalloon {
         }
 
         // Remove the chicken first to reduce lead dropping on armor stand clears
-        this.getChicken().remove();
+        if (this.getChicken() != null) {
+            this.getChicken().remove();
+            this.setChicken(null);
+        }
 
         // Loop through every node and destroy it (remove the armor stand mainly)
         for (MultipartBalloonNode multipartBalloonNode : this.getMultipartBalloonNodes()) {
@@ -219,6 +234,11 @@ public class MultipartBalloon {
 
         // Clear the model nodes list to prevent memory leaks
         this.getMultipartBalloonNodes().clear();
+        this.setTentacle(null);
+    }
+
+    public boolean isSpawned() {
+        return this.getRunnable() != null || this.getChicken() != null || !this.getMultipartBalloonNodes().isEmpty();
     }
 
     /**

@@ -2,6 +2,7 @@ package net.jeqo.bloons.management;
 
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,7 +18,9 @@ public class SingleBalloonManagement {
     public static void removeBalloon(Player player, SingleBalloon owner) {
         if (owner == null) return;
 
-        owner.spawnRemoveParticle();
+        if (owner.isSpawned()) {
+            owner.spawnRemoveParticle();
+        }
         owner.cancel();
         Bloons.getPlayerSingleBalloons().remove(player.getUniqueId());
         Bloons.getPlayerSingleBalloonID().remove(player.getUniqueId());
@@ -31,5 +34,23 @@ public class SingleBalloonManagement {
         if (balloon == null) return;
 
         balloon.cancel();
+    }
+
+    /**
+     *                  Restore a stored balloon if the player is in a world where balloons may spawn
+     * @param player    The player to restore the balloon for, type org.bukkit.entity.Player
+     * @param balloon   The balloon, type net.jeqo.bloons.balloon.single.SingleBalloon
+     */
+    public static void restoreBalloon(Player player, SingleBalloon balloon) {
+        if (balloon == null) return;
+
+        if (!ConfigConfiguration.canSpawnBalloonsInWorld(player.getWorld())) {
+            storeBalloon(balloon);
+            return;
+        }
+
+        if (!balloon.isSpawned()) {
+            balloon.start();
+        }
     }
 }

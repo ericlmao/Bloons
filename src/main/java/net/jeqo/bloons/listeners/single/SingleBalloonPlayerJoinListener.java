@@ -2,6 +2,7 @@ package net.jeqo.bloons.listeners.single;
 
 import net.jeqo.bloons.Bloons;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
+import net.jeqo.bloons.configuration.ConfigConfiguration;
 import net.jeqo.bloons.management.SingleBalloonManagement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,9 +24,20 @@ public class SingleBalloonPlayerJoinListener implements Listener {
         // If they have a balloon active, remove it and add it back to reduce issues
         if (balloonID != null) {
             SingleBalloon balloon = Bloons.getPlayerSingleBalloons().get(event.getPlayer().getUniqueId());
-            SingleBalloonManagement.removeBalloon(event.getPlayer(), Bloons.getPlayerSingleBalloons().get(event.getPlayer().getUniqueId()));
+            String overrideColor = balloon == null ? null : balloon.getOverrideColor();
 
-            SingleBalloon.checkBalloonRemovalOrAdd(event.getPlayer(), balloonID, balloon.getOverrideColor());
+            if (!ConfigConfiguration.canSpawnBalloonsInWorld(event.getPlayer().getWorld())) {
+                SingleBalloonManagement.storeBalloon(balloon);
+                return;
+            }
+
+            if (balloon == null) {
+                SingleBalloon.checkBalloonRemovalOrAdd(event.getPlayer(), balloonID, overrideColor);
+                return;
+            }
+
+            SingleBalloonManagement.storeBalloon(balloon);
+            SingleBalloonManagement.restoreBalloon(event.getPlayer(), balloon);
         }
     }
 }

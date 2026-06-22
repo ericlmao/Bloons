@@ -114,7 +114,6 @@ public class CommandForceEquip extends Command {
 
         // If the player has a previous multipart balloon, unequip it
         if (previousBalloon != null) {
-            previousBalloon.destroy();
             MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
         }
 
@@ -129,10 +128,9 @@ public class CommandForceEquip extends Command {
 
             SingleBalloonManagement.removeBalloon(player, Bloons.getPlayerSingleBalloons().get(player.getUniqueId()));
             MultipartBalloon balloon = builder.build();
-            balloon.initialize();
-            balloon.run();
 
             MultipartBalloonManagement.setPlayerBalloon(player.getUniqueId(), balloon);
+            MultipartBalloonManagement.restorePlayerBalloon(player.getUniqueId());
 
             String equippedMessage = Languages.getMessage("prefix") + String.format(Languages.getMessage("equipped"), type.getName());
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', equippedMessage));
