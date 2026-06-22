@@ -25,19 +25,11 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
           distribution: ${{ vars.UBUNTU_DISTRIBUTION }}
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
-
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build with Gradle
+        run: ./gradlew --no-daemon clean build
 
   # Runs on MacOS latest (version 12.0)
   macos:
@@ -56,19 +48,11 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
           distribution: ${{ vars.MACOS_DISTRIBUTION }}
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
-
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build with Gradle
+        run: ./gradlew --no-daemon clean build
 
   # Runs on Windows latest (version 2022)
   windows:
@@ -87,16 +71,8 @@ jobs:
           java-version: ${{ vars.JAVA_VERSION }}
           distribution: ${{ vars.WINDOWS_DISTRIBUTION }}
 
-      - name: Cache Maven dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Run the Maven verify phase
-        run: mvn --batch-mode --update-snapshots verify
-
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      - name: Build with Gradle
+        run: ./gradlew --no-daemon clean build

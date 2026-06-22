@@ -17,7 +17,7 @@ public class PluginConfiguration {
     public static final int BSTATS_PLUGIN_ID = 16872;
 
     /**
-     *          Get the version of the plugin from the pom.xml file
+     *          Get the version of the plugin from the plugin.yml file
      * @return  The version of the plugin, type java.lang.String
      */
     public static String getVersion() {
