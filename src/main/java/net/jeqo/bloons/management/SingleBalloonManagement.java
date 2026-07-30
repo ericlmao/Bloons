@@ -27,7 +27,7 @@ public class SingleBalloonManagement {
     }
 
     /**
-     *                  Store the balloon in storage and just cancel the runnable
+     *                  Hide the balloon entities while preserving the equipped balloon
      * @param balloon   The balloon, type net.jeqo.bloons.balloon.single.SingleBalloon
      */
     public static void storeBalloon(SingleBalloon balloon) {

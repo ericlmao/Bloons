@@ -26,7 +26,7 @@ public class MultipartBalloonPlayerListener implements Listener {
      */
     @EventHandler
     public void onDeath(PlayerDeathEvent event) {
-        MultipartBalloonManagement.removePlayerBalloon(event.getEntity().getUniqueId());
+        MultipartBalloonManagement.storePlayerBalloon(event.getEntity().getUniqueId());
     }
 
     /**

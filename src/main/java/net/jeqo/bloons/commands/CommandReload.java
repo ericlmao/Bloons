@@ -5,7 +5,6 @@ import net.jeqo.bloons.commands.manager.Command;
 import net.jeqo.bloons.commands.manager.types.CommandPermission;
 import net.jeqo.bloons.management.MultipartBalloonManagement;
 import net.jeqo.bloons.management.SingleBalloonManagement;
-import net.jeqo.bloons.message.Languages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,18 +29,15 @@ public class CommandReload extends Command {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        // Reload the main config.yml and its defaults
-        Bloons.getInstance().reloadConfig();
-        Bloons.getInstance().getConfig().options().copyDefaults();
-        Bloons.getInstance().saveDefaultConfig();
+        Bloons.getConfigurationManager().reload();
 
-        // Refresh balloons and their configurations from their respective files
         Bloons.getBalloonCore().initialize();
+
         Bloons.getPlayerSingleBalloons().forEach((uuid, balloon) ->
                 SingleBalloonManagement.restoreBalloon(balloon.getPlayer(), balloon));
         Bloons.getPlayerMultipartBalloons().keySet().forEach(MultipartBalloonManagement::restorePlayerBalloon);
 
-        String configReloadedMessage = Languages.getMessage("prefix") + Languages.getMessage("config-reloaded");
+        String configReloadedMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("config-reloaded");
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', configReloadedMessage));
 
         return false;

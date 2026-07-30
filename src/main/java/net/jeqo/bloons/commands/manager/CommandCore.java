@@ -8,21 +8,13 @@ import net.jeqo.bloons.commands.*;
 import net.jeqo.bloons.commands.manager.types.CommandAccess;
 import net.jeqo.bloons.configuration.PluginConfiguration;
 import net.jeqo.bloons.gui.menus.BalloonMenu;
+import net.jeqo.bloons.item.BalloonItemFactory;
 import net.jeqo.bloons.logger.Logger;
-import net.jeqo.bloons.colors.Color;
-import net.jeqo.bloons.message.Languages;
-import net.jeqo.bloons.message.MessageTranslations;
-import net.jeqo.bloons.utils.ItemModel;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,7 +32,6 @@ import static net.jeqo.bloons.commands.utils.ErrorHandling.usage;
 public class CommandCore implements CommandExecutor {
     private final ArrayList<Command> commands;
     private final JavaPlugin plugin;
-    private final MessageTranslations messageTranslations;
 
     /**
      *                          Creates a new instance of the command core
@@ -49,7 +40,6 @@ public class CommandCore implements CommandExecutor {
     public CommandCore(JavaPlugin providedPlugin) {
         this.plugin = providedPlugin;
         this.commands = new ArrayList<>();
-        this.messageTranslations = new MessageTranslations(this.getPlugin());
 
         // Add any commands you want registered here
         addCommand(new CommandEquip(this.getPlugin()));
@@ -104,50 +94,20 @@ public class CommandCore implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, String[] args) {
         if (args.length < 1) {
-            Player player = (Player) sender;
+            if (!(sender instanceof Player player)) return false;
 
             if (!player.hasPermission("bloons.menu")) {
-                String noPermission = Languages.getMessage("prefix") + Languages.getMessage("no-permission");
+                String noPermission = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission");
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
                 return true;
             }
 
-            ArrayList<ItemStack> items = new ArrayList<>();
-            ArrayList<SingleBalloonType> singleBalloonTypes = Bloons.getBalloonCore().getSingleBalloonTypes();
-            ArrayList<MultipartBalloonType> multipartBalloonTypes = Bloons.getBalloonCore().getMultipartBalloonTypes();
-
-            // Check if none are registered
-            if (singleBalloonTypes == null && multipartBalloonTypes == null) {
-                Logger.logError(ChatColor.translateAlternateColorCodes('&', Languages.getMessage("no-balloons-registered")));
+            ArrayList<ItemStack> items = buildMenuItems(player);
+            if (items == null) {
+                Logger.logError(ChatColor.translateAlternateColorCodes('&', Bloons.getConfigurationManager().getConfigString("no-balloons-registered")));
                 return false;
             }
-
-            if (singleBalloonTypes != null) {
-                // For every single balloon registered, add it to the GUI
-                for (SingleBalloonType singleBalloon : singleBalloonTypes) {
-                    if (singleBalloon == null) continue;
-
-                    if (shouldAddSingleBalloon(player, singleBalloon)) {
-                        ItemStack item = createBalloonItem(singleBalloon);
-                        items.add(item);
-                    }
-                }
-            }
-
-            if (multipartBalloonTypes != null) {
-                // For every multipart balloon registered, add it to the GUI
-                for (MultipartBalloonType multipartBalloon : multipartBalloonTypes) {
-                    if (multipartBalloon == null) continue;
-
-                    if (shouldAddMultipartBalloon(player, multipartBalloon)) {
-                        ItemStack item = createBalloonItem(multipartBalloon);
-                        items.add(item);
-                    }
-                }
-            }
-
-            // Formulate a menu with the items
-            new BalloonMenu(items, this.getMessageTranslations().getString("menu-title"), player);
+            new BalloonMenu(items, Bloons.getConfigurationManager().getConfigString("menu-title"), player);
             return true;
         }
 
@@ -161,13 +121,13 @@ public class CommandCore implements CommandExecutor {
             if (currentCommand.getCommandAliases().contains(subcommand)) {
                 // Check if the sender has the permission to execute the command
                 if (!meetsRequirements(currentCommand, sender)) {
-                    sender.sendMessage(Languages.getMessage("prefix") + Languages.getMessage("no-permission"));
+                    sender.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission"));
                     return false;
                 }
 
                 // Check if the command is disabled
                 if (currentCommand.getRequiredAccess() == CommandAccess.DISABLED) {
-                    sender.sendMessage(Languages.getMessage("prefix") + Languages.getMessage("command-disabled"));
+                    sender.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("command-disabled"));
                     return false;
                 }
 
@@ -202,7 +162,7 @@ public class CommandCore implements CommandExecutor {
      * @return                      Whether we should add the balloon to the menu, type boolean
      */
     private boolean shouldAddSingleBalloon(Player player, SingleBalloonType singleBalloonType) {
-        if (this.getMessageTranslations().getString("hide-balloons-without-permission").equalsIgnoreCase("true")) {
+        if (Bloons.getConfigurationManager().getConfigString("hide-balloons-without-permission").equalsIgnoreCase("true")) {
             if (singleBalloonType.getPermission() == null) return true;
 
             return player.hasPermission(singleBalloonType.getPermission());
@@ -217,7 +177,7 @@ public class CommandCore implements CommandExecutor {
      * @return                      Whether we should add the balloon to the menu, type boolean
      */
     private boolean shouldAddMultipartBalloon(Player player, MultipartBalloonType multipartBalloonType) {
-        if (this.getMessageTranslations().getString("hide-balloons-without-permission").equalsIgnoreCase("true")) {
+        if (Bloons.getConfigurationManager().getConfigString("hide-balloons-without-permission").equalsIgnoreCase("true")) {
             if (multipartBalloonType.getPermission() == null) return true;
 
             return player.hasPermission(multipartBalloonType.getPermission());
@@ -225,168 +185,40 @@ public class CommandCore implements CommandExecutor {
         return true;
     }
 
-    /**
-     *                              Creates an ItemStack for a balloon
-     * @param singleBalloonType     The instance of the object which contains the balloon's configuration, type net.jeqo.bloons.balloon.single.SingleBalloonType
-     * @return                      The ItemStack of the balloon, type org.bukkit.inventory.ItemStack
-     */
-    private ItemStack createBalloonItem(SingleBalloonType singleBalloonType) {
-        Material material = Material.matchMaterial(singleBalloonType.getMaterial());
-        if (material == null) {
-            Logger.logError(String.format(Languages.getMessage("material-not-valid"), singleBalloonType.getMaterial()));
-            return null;
-        }
+    private ArrayList<ItemStack> buildMenuItems(Player player) {
+        ArrayList<SingleBalloonType> singleBalloonTypes = Bloons.getBalloonCore().getSingleBalloonTypes();
+        ArrayList<MultipartBalloonType> multipartBalloonTypes = Bloons.getBalloonCore().getMultipartBalloonTypes();
 
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            Logger.logError(String.format(Languages.getMessage("invalid-item-meta"), singleBalloonType.getMaterial()));
-            return null;
-        }
+        if (singleBalloonTypes == null && multipartBalloonTypes == null) return null;
 
-        meta.setItemName(singleBalloonType.getKey());
-        setBalloonLore(meta, singleBalloonType);
-        setBalloonDisplayName(meta, singleBalloonType);
-
-        ItemModel.apply(meta, singleBalloonType.getItemModel());
-
-        setBalloonColor(meta, singleBalloonType);
-
-        NamespacedKey balloonIdKey = new NamespacedKey(Bloons.getInstance(), "balloonId");
-        meta.getPersistentDataContainer().set(balloonIdKey, org.bukkit.persistence.PersistentDataType.STRING, singleBalloonType.getId());
-
-        item.setItemMeta(meta);
-        return item;
+        ArrayList<ItemStack> items = new ArrayList<>();
+        addSingleBalloonItems(player, items, singleBalloonTypes);
+        addMultipartBalloonItems(player, items, multipartBalloonTypes);
+        return items;
     }
 
-    /**
-     *                                Creates an ItemStack for a multipart balloon
-     * @param multipartBalloonType    The instance of the object which contains the balloon's configuration, type org.bukkit.configuration.ConfigurationSection
-     * @return                        The ItemStack of the balloon, type org.bukkit.inventory.ItemStack
-     */
-    private ItemStack createBalloonItem(MultipartBalloonType multipartBalloonType) {
-        Material material = Material.matchMaterial(multipartBalloonType.getHeadModel().getMaterial());
-        if (material == null) {
-            Logger.logError(String.format(Languages.getMessage("material-not-valid"), multipartBalloonType.getHeadModel().getMaterial()));
-            return null;
-        }
+    private void addSingleBalloonItems(Player player, List<ItemStack> items, List<SingleBalloonType> balloonTypes) {
+        if (balloonTypes == null) return;
 
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            Logger.logError(String.format(Languages.getMessage("invalid-item-meta"), multipartBalloonType.getHeadModel().getMaterial()));
-            return null;
-        }
+        for (SingleBalloonType singleBalloon : balloonTypes) {
+            if (singleBalloon == null || !shouldAddSingleBalloon(player, singleBalloon)) continue;
 
-        meta.setItemName(multipartBalloonType.getId());
-        setBalloonLore(meta, multipartBalloonType);
-        setBalloonDisplayName(meta, multipartBalloonType);
-
-        ItemModel.apply(meta, multipartBalloonType.getHeadModel().getItemModel());
-
-        if (multipartBalloonType.getHeadModel().getColor() != null) {
-            setBalloonColor(meta, multipartBalloonType);
-        }
-
-        NamespacedKey balloonIdKey = new NamespacedKey(Bloons.getInstance(), "balloonId");
-        meta.getPersistentDataContainer().set(balloonIdKey, PersistentDataType.STRING, multipartBalloonType.getId());
-
-        item.setItemMeta(meta);
-        return item;
-    }
-
-    /**
-     *                              Sets the lore of the balloon
-     * @param meta                  The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param singleBalloonType     The instance of the object which contains the balloon's configuration, type net.jeqo.bloons.balloon.single.SingleBalloonType
-     */
-    private void setBalloonLore(ItemMeta meta, SingleBalloonType singleBalloonType) {
-        if (singleBalloonType.getLore() != null) {
-            List<String> lore = new ArrayList<>(List.of(singleBalloonType.getLore()));
-            lore.replaceAll(Color::fromHex);
-            meta.setLore(lore);
-        }
-    }
-
-    /**
-     *                              Sets the lore of the balloon
-     * @param meta                  The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param multipartBalloonType  The instance of the object which contains the balloon's configuration, type org.bukkit.configuration.ConfigurationSection
-     */
-    private void setBalloonLore(ItemMeta meta, MultipartBalloonType multipartBalloonType) {
-        if (multipartBalloonType.getLore() != null) {
-            List<String> lore = new ArrayList<>(List.of(multipartBalloonType.getLore()));
-            lore.replaceAll(Color::fromHex);
-            meta.setLore(lore);
-        }
-    }
-
-    /**
-     *                             Sets the display name of the balloon
-     * @param meta                 The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param singleBalloonType    The instance of the object which contains the balloon's configuration, type net.jeqo.bloons.balloon.single.SingleBalloonType
-     */
-    private void setBalloonDisplayName(ItemMeta meta, SingleBalloonType singleBalloonType) {
-        String name = singleBalloonType.getName();
-        if (name != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        }
-    }
-
-    /**
-     *                             Sets the display name of the balloon
-     * @param meta                 The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param multipartBalloonType The instance of the object which contains the balloon's configuration, type org.bukkit.configuration.ConfigurationSection
-     */
-    private void setBalloonDisplayName(ItemMeta meta, MultipartBalloonType multipartBalloonType) {
-        String name = multipartBalloonType.getName();
-        if (name != null) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
-        }
-    }
-
-    /**
-     *                             Sets the color of the balloon
-     * @param meta                 The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param singleBalloonType    The configuration section of the balloon, type org.bukkit.configuration.ConfigurationSection
-     */
-    private void setBalloonColor(ItemMeta meta, SingleBalloonType singleBalloonType) {
-        String color = singleBalloonType.getColor();
-
-        if (color != null && !color.equalsIgnoreCase("potion")) {
-            if (meta instanceof LeatherArmorMeta) {
-                ((LeatherArmorMeta) meta).setColor(Color.hexToColor(color));
-            } else if (meta instanceof org.bukkit.inventory.meta.FireworkEffectMeta fireworkMeta) {
-                org.bukkit.FireworkEffect effect = org.bukkit.FireworkEffect.builder()
-                        .withColor(Color.hexToColor(color))
-                        .build();
-                fireworkMeta.setEffect(effect);
-            } else {
-                if (singleBalloonType.getMegModelID() == null) {
-                    Logger.logWarning(String.format(Languages.getMessage("material-not-dyeable"), singleBalloonType.getMaterial()));
-                }
+            ItemStack item = BalloonItemFactory.createSingleMenuItem(singleBalloon);
+            if (item != null) {
+                items.add(item);
             }
         }
     }
 
-    /**
-     *                             Sets the color of the balloon
-     * @param meta                 The ItemMeta of the balloon, type org.bukkit.inventory.meta.ItemMeta
-     * @param multipartBalloonType The configuration section of the balloon, type org.bukkit.configuration.ConfigurationSection
-     */
-    private void setBalloonColor(ItemMeta meta, MultipartBalloonType multipartBalloonType) {
-        String color = multipartBalloonType.getHeadModel().getColor();
+    private void addMultipartBalloonItems(Player player, List<ItemStack> items, List<MultipartBalloonType> balloonTypes) {
+        if (balloonTypes == null) return;
 
-        if (color != null && !color.equalsIgnoreCase("potion")) {
-            if (meta instanceof LeatherArmorMeta) {
-                ((LeatherArmorMeta) meta).setColor(Color.hexToColor(color));
-            } else if (meta instanceof org.bukkit.inventory.meta.FireworkEffectMeta fireworkMeta) {
-                org.bukkit.FireworkEffect effect = org.bukkit.FireworkEffect.builder()
-                        .withColor(Color.hexToColor(color))
-                        .build();
-                fireworkMeta.setEffect(effect);
-            } else {
-                Logger.logWarning(String.format(Languages.getMessage("material-not-dyeable"), multipartBalloonType.getHeadModel().getMaterial()));
+        for (MultipartBalloonType multipartBalloon : balloonTypes) {
+            if (multipartBalloon == null || !shouldAddMultipartBalloon(player, multipartBalloon)) continue;
+
+            ItemStack item = BalloonItemFactory.createMultipartMenuItem(multipartBalloon);
+            if (item != null) {
+                items.add(item);
             }
         }
     }

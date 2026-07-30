@@ -41,7 +41,8 @@ public class MultipartBalloonManagement {
     }
 
     /**
-     *                  Hide the player's balloon entities while preserving the equipped balloon
+     *                  Store the player's balloon without forgetting which balloon is equipped.
+     *                  This is used for temporary teardown events like death.
      * @param playerId  The player's UUID, type java.util.UUID
      */
     public static void storePlayerBalloon(UUID playerId) {
@@ -52,8 +53,9 @@ public class MultipartBalloonManagement {
     }
 
     /**
-     *                  Spawn the equipped balloon if the owner is in a whitelisted world
-     * @param playerId  The player's UUID, type java.util.UUID
+     * Spawn the equipped balloon if its owner is in an allowed world.
+     *
+     * @param playerId the player's UUID
      */
     public static void restorePlayerBalloon(UUID playerId) {
         MultipartBalloon balloon = Bloons.getPlayerMultipartBalloons().get(playerId);

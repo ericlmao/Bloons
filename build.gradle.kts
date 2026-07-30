@@ -11,7 +11,7 @@ description = "A unique balloons plugin."
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
+        languageVersion.set(JavaLanguageVersion.of(26))
     }
 
     withJavadocJar()
@@ -19,21 +19,21 @@ java {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.2.build.75-beta")
     compileOnly("com.ticxo.modelengine:ModelEngine:R4.0.9")
 
     compileOnly("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
     implementation("gg.moonrise.scheduler:folia-scheduler:1.0.1")
-    implementation("org.jetbrains:annotations:24.1.0")
-    implementation("org.apache.maven:maven-model:3.9.7")
+    implementation("org.jetbrains:annotations:26.1.0")
+    implementation("org.apache.maven:maven-model:3.9.16")
 }
 
 tasks {
     compileJava {
         options.encoding = "UTF-8"
-        options.release.set(21)
+        options.release.set(25)
     }
 
     javadoc {
