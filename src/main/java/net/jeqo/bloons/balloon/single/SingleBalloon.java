@@ -11,10 +11,9 @@ import net.jeqo.bloons.logger.Logger;
 import net.jeqo.bloons.message.Languages;
 import net.jeqo.bloons.management.SingleBalloonManagement;
 import net.jeqo.bloons.colors.Color;
-import net.jeqo.bloons.utils.CustomModelDataCompat;
+import net.jeqo.bloons.utils.ItemModel;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Chicken;
@@ -27,7 +26,6 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.joml.Quaternionf;
 
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Getter @Setter
@@ -331,18 +329,7 @@ public class SingleBalloon {
         ItemMeta meta = item.getItemMeta();
 
         if (meta != null) {
-            // Set custom model data if present
-            String customModelData = singleBalloonType.getCustomModelData();
-            if (customModelData != null && !customModelData.isEmpty()) {
-                CustomModelDataCompat.applyCustomModelData(meta, List.of(customModelData));
-            }
-
-            // Set item model if present
-            String itemModel = singleBalloonType.getItemModel();
-            if (itemModel != null && !itemModel.isEmpty()) {
-                NamespacedKey itemModelKey = NamespacedKey.fromString(itemModel);
-                meta.setItemModel(itemModelKey);
-            }
+            ItemModel.apply(meta, singleBalloonType.getItemModel());
 
             // Decide which colour to use: override takes precedence
             String colorHex = (overrideColor != null && !overrideColor.isEmpty()) ? overrideColor : singleBalloonType.getColor();

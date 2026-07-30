@@ -180,7 +180,7 @@ public class ConfigConfiguration {
                                     config.getString(key + ".id"),
                                     config.getString(key + ".permission"),
                                     config.getString(key + ".icon.material"),
-                                    config.getString(key + ".icon.custom-model-data"),
+                                    config.getString(key + ".icon.item-model"),
                                     config.getString(key + ".meg-model-id"),
                                     config.getString(key + ".icon.name"),
                                     config.getStringList(key + ".icon.lore").toArray(new String[0])
@@ -200,7 +200,6 @@ public class ConfigConfiguration {
                                     config.getDouble(key + ".balloon-height"),
                                     config.getString(key + ".material"),
                                     config.getString(key + ".color"),
-                                    config.getString(key + ".custom-model-data"),
                                     config.getString(key + ".item-model"),
                                     config.getString(key + ".name"),
                                     config.getStringList(key + ".lore").toArray(new String[0])
@@ -274,7 +273,6 @@ public class ConfigConfiguration {
                                 BalloonSegmentType.BODY,
                                 config.getString(key + ".body.material"),
                                 config.getString(key + ".body.color"),
-                                config.getString(key + ".body.custom-model-data"),
                                 config.getString(key + ".body.item-model")
                         );
                         for (int i = nodeCount - 2; i >= 1; i--) {
@@ -283,7 +281,6 @@ public class ConfigConfiguration {
                                         BalloonSegmentType.BODY,
                                         config.getString(key + ".body-" + i + ".material"),
                                         config.getString(key + ".body-" + i + ".color"),
-                                        config.getString(key + ".body-" + i + ".custom-model-data"),
                                         config.getString(key + ".body-" + i + ".item-model")
                                 ));
                             } else {
@@ -318,7 +315,6 @@ public class ConfigConfiguration {
                                         BalloonSegmentType.HEAD,
                                         config.getString(key + ".head.material"),
                                         config.getString(key + ".head.color"),
-                                        config.getString(key + ".head.custom-model-data"),
                                         config.getString(key + ".head.item-model")
                                 ),
                                 bodyModels,
@@ -326,7 +322,6 @@ public class ConfigConfiguration {
                                         BalloonSegmentType.TAIL,
                                         config.getString(key + ".tail.material"),
                                         config.getString(key + ".tail.color"),
-                                        config.getString(key + ".tail.custom-model-data"),
                                         config.getString(key + ".tail.item-model")
                                 ),
                                 config.getBoolean(key + ".tail-particles.enabled"),

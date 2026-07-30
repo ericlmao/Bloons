@@ -25,7 +25,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.46")
     annotationProcessor("org.projectlombok:lombok:1.18.46")
 
-    implementation("gg.moonrise.scheduler:folia-scheduler:1.0.0")
+    implementation("gg.moonrise.scheduler:folia-scheduler:1.0.1")
     implementation("org.jetbrains:annotations:24.1.0")
     implementation("org.apache.maven:maven-model:3.9.7")
 }

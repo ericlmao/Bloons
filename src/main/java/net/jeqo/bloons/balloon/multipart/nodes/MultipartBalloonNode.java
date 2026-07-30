@@ -297,7 +297,7 @@ public class MultipartBalloonNode {
             MultipartBalloonModel orig = this.getBalloonType().getHeadModel();
             MultipartBalloonModel modelToUse;
             if (stored != null && stored.getHeadColorOverride() != null) {
-                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getHeadColorOverride(), orig.getCustomModelData(), orig.getItemModel());
+                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getHeadColorOverride(), orig.getItemModel());
             } else {
                 modelToUse = orig;
             }
@@ -308,7 +308,7 @@ public class MultipartBalloonNode {
             MultipartBalloonModel orig = this.getBalloonType().getTailModel();
             MultipartBalloonModel modelToUse;
             if (stored != null && stored.getTailColorOverride() != null) {
-                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getTailColorOverride(), orig.getCustomModelData(), orig.getItemModel());
+                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getTailColorOverride(), orig.getItemModel());
             } else {
                 modelToUse = orig;
             }
@@ -330,7 +330,7 @@ public class MultipartBalloonNode {
             MultipartBalloonModel orig = this.getBalloonType().getBodyModels().get(bodyIndex);
             MultipartBalloonModel modelToUse;
             if (stored != null && stored.getBodyColorOverride() != null) {
-                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getBodyColorOverride(), orig.getCustomModelData(), orig.getItemModel());
+                modelToUse = new MultipartBalloonModel(orig.getSegmentType(), orig.getMaterial(), stored.getBodyColorOverride(), orig.getItemModel());
             } else {
                 modelToUse = orig;
             }

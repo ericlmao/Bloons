@@ -5,7 +5,7 @@ single_meg_example:
   meg-model-id: balloon_blue
   icon:
     material: FLINT
-    custom-model-data: "balloon_blue"
+    item-model: "bloons:balloon_blue"
     name: '&fSingle MEG Balloon'
     lore:
       - '&8Bloons Default Balloon'

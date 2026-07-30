@@ -7,7 +7,7 @@ import net.jeqo.bloons.logger.Logger;
 import net.jeqo.bloons.colors.Color;
 import net.jeqo.bloons.message.Languages;
 import net.jeqo.bloons.message.MessageTranslations;
-import net.jeqo.bloons.utils.CustomModelDataCompat;
+import net.jeqo.bloons.utils.ItemModel;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -61,7 +61,7 @@ public class BalloonMenu {
         ItemMeta nextMeta = nextPage.getItemMeta();
         assert nextMeta != null;
         nextMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.getMessageTranslations().getString("buttons.next-page.name")));
-        CustomModelDataCompat.applyCustomModelData(nextMeta, List.of(this.getMessageTranslations().getString("buttons.next-page.custom-model-data")));
+        ItemModel.apply(nextMeta, this.getMessageTranslations().getString("buttons.next-page.item-model"));
         nextPage.setItemMeta(nextMeta);
 
         // Create previous page button
@@ -69,7 +69,7 @@ public class BalloonMenu {
         ItemMeta prevMeta = prevPage.getItemMeta();
         assert prevMeta != null;
         prevMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.getMessageTranslations().getString("buttons.previous-page.name")));
-        CustomModelDataCompat.applyCustomModelData(prevMeta, List.of(this.getMessageTranslations().getString("buttons.previous-page.custom-model-data")));
+        ItemModel.apply(prevMeta, this.getMessageTranslations().getString("buttons.previous-page.item-model"));
         prevPage.setItemMeta(prevMeta);
 
         // Create remove/unequip balloon button
@@ -78,7 +78,7 @@ public class BalloonMenu {
         assert removeMeta != null;
         removeMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', this.getMessageTranslations().getString("buttons.unequip.name")));
 
-        CustomModelDataCompat.applyCustomModelData(removeMeta, List.of(this.getMessageTranslations().getString("buttons.unequip.custom-model-data")));
+        ItemModel.apply(removeMeta, this.getMessageTranslations().getString("buttons.unequip.item-model"));
         removeBalloon.setItemMeta(removeMeta);
 
         // Add buttons to GUI

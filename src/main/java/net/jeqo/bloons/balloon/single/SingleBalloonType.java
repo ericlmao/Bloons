@@ -42,10 +42,6 @@ public class SingleBalloonType {
      */
     private String color = "#ffffff";
     /**
-     * The value of the custom model data stored in the item metadata for the model
-     */
-    private String customModelData;
-    /**
      * The item model name used for the balloon item
      */
     private String itemModel;
@@ -73,12 +69,11 @@ public class SingleBalloonType {
      * @param balloonHeight     The height of the balloon when attached to a player, type double
      * @param material          The name of the Bukkit Material used to create the item, type java.lang.String
      * @param color             The color of the model as a hex color code value, type java.lang.String
-     * @param customModelData   The custom model data value stored in the item metadata, type java.lang.String
      * @param itemModel         The item model name used for the balloon item, type java.lang.String
      * @param name              The name of the balloon, type java.lang.String
      * @param lore              The lore of the balloon, type java.lang.String[]
      */
-    public SingleBalloonType(String key, String id, String permission, double leashHeight, double balloonHeight, String material, String color, String customModelData, String itemModel, String name, String[] lore) {
+    public SingleBalloonType(String key, String id, String permission, double leashHeight, double balloonHeight, String material, String color, String itemModel, String name, String[] lore) {
         this.setKey(key);
         this.setId(id);
         this.setPermission(permission);
@@ -86,7 +81,6 @@ public class SingleBalloonType {
         if (balloonHeight > 0.0D) this.setBalloonHeight(balloonHeight);
         this.setMaterial(material);
         this.setColor(color);
-        this.setCustomModelData(customModelData);
         this.setItemModel(itemModel);
         this.setName(name);
         this.setLore(lore);
@@ -98,18 +92,18 @@ public class SingleBalloonType {
      * @param id                The unique identifier for the balloon type, type java.lang.String
      * @param permission        The permission required to use the balloon type, type java.lang.String
      * @param material          The name of the Bukkit Material used to create the item, type java.lang.String
-     * @param customModelData   The custom model data value stored in the item metadata, type java.lang.String
+     * @param itemModel         The item model name used for the balloon icon, type java.lang.String
      * @param megModelID        The ID of the MEG model to use as the balloon model, type java.lang.String
      * @param name              The name of the balloon, type java.lang.String
      * @param lore              The lore of the balloon, type java.lang.String[]
      */
-    public SingleBalloonType(String key, String id, String permission, String material, String customModelData, String megModelID, String name, String[] lore) {
+    public SingleBalloonType(String key, String id, String permission, String material, String itemModel, String megModelID, String name, String[] lore) {
         this.setKey(key);
         this.setId(id);
         this.setPermission(permission);
         this.setMegModelID(megModelID);
         this.setMaterial(material);
-        this.setCustomModelData(customModelData);
+        this.setItemModel(itemModel);
         this.setName(name);
         this.setLore(lore);
     }

@@ -27,24 +27,23 @@ multipart_example:
   head: # Head must be supplied for a balloon of this kind
     material: LEATHER_HORSE_ARMOR # The material of the head
     color: '#FF0000' # The color of the head item, this is optional
-    custom-model-data: "balloon_dyeable" # The custom model data of the head, this is not required but is recommended for use of models
-#   item-model: "bloons:example" # The item model of the head, this is not required but can be used for custom item models
+    item-model: "bloons:balloon_dyeable" # The item model of the head, this is optional
   body: # Default body type must be supplied for a balloon of this kind
     material: LEATHER_HORSE_ARMOR # The material of the body
     color: '#FFFFFF' # The color of the body, this is optional
-    custom-model-data: "balloon_dyeable" # The custom model data of the body, this is not required but is recommended for use of models
+    item-model: "bloons:balloon_dyeable" # The item model of the body, this is optional
   body-1: # Specify first body type for the first body balloon
     material: LEATHER_HORSE_ARMOR # The material of the body
     color: '#00FF00' # The color of the body, this is optional
-    custom-model-data: "balloon_dyeable" # The custom model data of the body, this is not required but is recommended for use of models
+    item-model: "bloons:balloon_dyeable" # The item model of the body, this is optional
   body-2: # Specify second body type for the second body balloon
     material: LEATHER_HORSE_ARMOR # The material of the body
     color: '#0000FF' # The color of the body, this is optional
-    custom-model-data: "balloon_dyeable" # The custom model data of the body, this is not required but is recommended for use of models
+    item-model: "bloons:balloon_dyeable" # The item model of the body, this is optional
   tail: # Tail must be supplied for a balloon of this kind
     material: LEATHER_HORSE_ARMOR # The material of the tail
     color: '#0000FF' # The color of the tail, this is optional
-    custom-model-data: "balloon_dyeable" # The custom model data of the tail, this is not required but is recommended for use of models
+    item-model: "bloons:balloon_dyeable" # The item model of the tail, this is optional
   tail-particles: # Optional tail particles configuration
     enabled: true # Whether tail particles are enabled
     particle-type: DUST # The type of particle to use for the tail

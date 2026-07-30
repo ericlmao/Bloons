@@ -12,7 +12,7 @@ import net.jeqo.bloons.logger.Logger;
 import net.jeqo.bloons.colors.Color;
 import net.jeqo.bloons.message.Languages;
 import net.jeqo.bloons.message.MessageTranslations;
-import net.jeqo.bloons.utils.CustomModelDataCompat;
+import net.jeqo.bloons.utils.ItemModel;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -248,16 +248,7 @@ public class CommandCore implements CommandExecutor {
         setBalloonLore(meta, singleBalloonType);
         setBalloonDisplayName(meta, singleBalloonType);
 
-        String customModelData = singleBalloonType.getCustomModelData();
-        if (customModelData != null && !customModelData.isEmpty()) {
-            CustomModelDataCompat.applyCustomModelData(meta, List.of(customModelData));
-        }
-
-        String itemModel = singleBalloonType.getItemModel();
-        if (itemModel != null && !itemModel.isEmpty()) {
-            NamespacedKey itemModelKey = NamespacedKey.fromString(itemModel);
-            meta.setItemModel(itemModelKey);
-        }
+        ItemModel.apply(meta, singleBalloonType.getItemModel());
 
         setBalloonColor(meta, singleBalloonType);
 
@@ -291,16 +282,7 @@ public class CommandCore implements CommandExecutor {
         setBalloonLore(meta, multipartBalloonType);
         setBalloonDisplayName(meta, multipartBalloonType);
 
-        String customModelData = multipartBalloonType.getHeadModel().getCustomModelData();
-        if (customModelData != null && !customModelData.isEmpty()) {
-            CustomModelDataCompat.applyCustomModelData(meta, List.of(customModelData));
-        }
-
-        String itemModel = multipartBalloonType.getHeadModel().getItemModel();
-        if (itemModel != null && !itemModel.isEmpty()) {
-            NamespacedKey itemModelKey = NamespacedKey.fromString(itemModel);
-            meta.setItemModel(itemModelKey);
-        }
+        ItemModel.apply(meta, multipartBalloonType.getHeadModel().getItemModel());
 
         if (multipartBalloonType.getHeadModel().getColor() != null) {
             setBalloonColor(meta, multipartBalloonType);
