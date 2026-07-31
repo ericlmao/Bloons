@@ -144,6 +144,19 @@ public class ConfigurationManager {
     }
 
     /**
+     * Gets a string only when it is explicitly present in the server's config file.
+     * Embedded defaults are intentionally ignored so optional settings can be removed.
+     *
+     * @param path the config path to read
+     * @return the configured string, or null when the path is absent
+     */
+    public String getOptionalConfigString(String path) {
+        if (!this.plugin.getConfig().contains(path, true)) return null;
+
+        return this.plugin.getConfig().getString(path);
+    }
+
+    /**
      *                      Gets an integer value from the main plugin config
      * @param path        The config path to read, type java.lang.String
      * @return            The configured integer value, type int

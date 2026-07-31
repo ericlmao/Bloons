@@ -58,7 +58,7 @@ public class BalloonMenu {
         ItemMeta nextMeta = nextPage.getItemMeta();
         assert nextMeta != null;
         nextMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Bloons.getConfigurationManager().getConfigString("buttons.next-page.name")));
-        ItemModel.apply(nextMeta, Bloons.getConfigurationManager().getConfigString("buttons.next-page.item-model"));
+        ItemModel.apply(nextMeta, Bloons.getConfigurationManager().getOptionalConfigString("buttons.next-page.item-model"));
         nextPage.setItemMeta(nextMeta);
 
         // Create previous page button
@@ -66,7 +66,7 @@ public class BalloonMenu {
         ItemMeta prevMeta = prevPage.getItemMeta();
         assert prevMeta != null;
         prevMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Bloons.getConfigurationManager().getConfigString("buttons.previous-page.name")));
-        ItemModel.apply(prevMeta, Bloons.getConfigurationManager().getConfigString("buttons.previous-page.item-model"));
+        ItemModel.apply(prevMeta, Bloons.getConfigurationManager().getOptionalConfigString("buttons.previous-page.item-model"));
         prevPage.setItemMeta(prevMeta);
 
         // Create remove/unequip balloon button
@@ -75,7 +75,7 @@ public class BalloonMenu {
         assert removeMeta != null;
         removeMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', Bloons.getConfigurationManager().getConfigString("buttons.unequip.name")));
 
-        ItemModel.apply(removeMeta, Bloons.getConfigurationManager().getConfigString("buttons.unequip.item-model"));
+        ItemModel.apply(removeMeta, Bloons.getConfigurationManager().getOptionalConfigString("buttons.unequip.item-model"));
         removeBalloon.setItemMeta(removeMeta);
 
         // Add buttons to GUI

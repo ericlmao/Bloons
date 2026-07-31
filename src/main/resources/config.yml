@@ -37,18 +37,21 @@ balloon-slots: 45
 buttons:
   previous-page:
     material: FLINT
+    # Optional. Remove this key to use the material's default item model.
     item-model: "bloons:previous_page"
     name: '&7← ᴘʀᴇᴠɪᴏᴜs ᴘᴀɢᴇ'
     slots:
       - 48
   unequip:
     material: FLINT
+    # Optional. Remove this key to use the material's default item model.
     item-model: "bloons:unequip"
     name: '&7ᴜɴᴇǫᴜɪᴘ ʙᴀʟʟᴏᴏɴ'
     slots:
       - 49
   next-page:
     material: FLINT
+    # Optional. Remove this key to use the material's default item model.
     item-model: "bloons:next_page"
     name: '&7ɴᴇxᴛ ᴘᴀɢᴇ →'
     slots:
