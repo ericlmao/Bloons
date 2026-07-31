@@ -8,6 +8,6 @@ authors: [ Jeqo, Gucci Fox ]
 description: A unique balloons plugin.
 website: https://jeqo.net/bloons
 commands:
-  bloons:
-    aliases: [balloons, b]
+  balloons:
+    aliases: [balloon, b]
     description: The central command to access the Bloons commands.
