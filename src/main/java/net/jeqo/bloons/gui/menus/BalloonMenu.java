@@ -84,7 +84,7 @@ public class BalloonMenu {
             if (Integer.parseInt(previousPageSlot) < pageSize) {
                 page.setItem(Integer.parseInt(previousPageSlot), prevPage);
             } else {
-                Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("menu-slot-out-of-bounds"), "Previous"));
+                Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("menu-slot-out-of-bounds"), "Previous"));
             }
         }
 
@@ -93,7 +93,7 @@ public class BalloonMenu {
             if (Integer.parseInt(unequipSlot) < pageSize) {
                 page.setItem(Integer.parseInt(unequipSlot), removeBalloon);
             } else {
-                Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("menu-slot-out-of-bounds"), "Unequip"));
+                Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("menu-slot-out-of-bounds"), "Unequip"));
             }
         }
 
@@ -102,7 +102,7 @@ public class BalloonMenu {
             if (Integer.parseInt(nextPageSlot) < pageSize) {
                 page.setItem(Integer.parseInt(nextPageSlot), nextPage);
             } else {
-                Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("menu-slot-out-of-bounds"), "Next"));
+                Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("menu-slot-out-of-bounds"), "Next"));
             }
         }
 

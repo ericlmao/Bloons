@@ -77,7 +77,7 @@ public class BalloonMenuListener implements Listener {
 
             // Send equipped message and play sound
             player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
-            String equippedMessage = Bloons.getConfigurationManager().getConfigString("prefix") + String.format(Bloons.getConfigurationManager().getConfigString("equipped"), displayName);
+            String equippedMessage = Bloons.getConfigurationManager().getMessage("prefix") + String.format(Bloons.getConfigurationManager().getMessage("equipped"), displayName);
             player.sendMessage(equippedMessage);
 
             // Close inventory if the config is set to true
@@ -128,7 +128,7 @@ public class BalloonMenuListener implements Listener {
                 if (singleBalloon == null && multipartBalloon == null) {
                     // If no balloon equipped, play sound and send message notifying them
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_DIDGERIDOO, 1, 1);
-                    player.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix"), Bloons.getConfigurationManager().getConfigString("not-equipped"));
+                    player.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("not-equipped"));
                 } else {
                     if (singleBalloon != null) {
                         if (Bloons.getConfigurationManager().getConfigString("close-on-unequip").equals("true")) player.closeInventory();
@@ -137,7 +137,7 @@ public class BalloonMenuListener implements Listener {
 
                         // Play sound and send message saying the balloon is unequipped
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH, 1, 1);
-                        player.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix"), Bloons.getConfigurationManager().getConfigString("unequipped"));
+                        player.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("unequipped"));
                     }
 
                     if (multipartBalloon != null) {
@@ -147,7 +147,7 @@ public class BalloonMenuListener implements Listener {
 
                         // Play sound and send message saying the balloon is unequipped
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH, 1, 1);
-                        player.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix"), Bloons.getConfigurationManager().getConfigString("unequipped"));
+                        player.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("unequipped"));
                     }
                 }
             }

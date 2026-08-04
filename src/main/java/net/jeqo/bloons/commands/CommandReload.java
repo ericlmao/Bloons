@@ -37,7 +37,7 @@ public class CommandReload extends Command {
                 SingleBalloonManagement.restoreBalloon(balloon.getPlayer(), balloon));
         Bloons.getPlayerMultipartBalloons().keySet().forEach(MultipartBalloonManagement::restorePlayerBalloon);
 
-        String configReloadedMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("config-reloaded");
+        String configReloadedMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("config-reloaded");
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', configReloadedMessage));
 
         return false;

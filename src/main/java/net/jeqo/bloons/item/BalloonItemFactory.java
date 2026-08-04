@@ -84,7 +84,7 @@ public final class BalloonItemFactory {
 
         String colorHex = isBlank(overrideColor) ? balloonType.getColor() : overrideColor;
         if ("potion".equalsIgnoreCase(colorHex) && balloonType.getMaterial().startsWith(LEATHER_MATERIAL_PREFIX)) {
-            Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("material-not-dyeable"), balloonType.getMaterial()));
+            Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("material-not-dyeable"), balloonType.getMaterial()));
             item.setItemMeta(meta);
             return item;
         }
@@ -97,7 +97,7 @@ public final class BalloonItemFactory {
     private static ItemStack createBaseItem(String materialName, String itemModel) {
         Material material = Material.matchMaterial(materialName);
         if (material == null) {
-            Logger.logError(String.format(Bloons.getConfigurationManager().getConfigString("material-not-valid"), materialName));
+            Logger.logError(String.format(Bloons.getConfigurationManager().getMessage("material-not-valid"), materialName));
             return null;
         }
 
@@ -154,12 +154,12 @@ public final class BalloonItemFactory {
         }
 
         if (warnWhenNotDyeable || !materialName.startsWith(LEATHER_MATERIAL_PREFIX)) {
-            Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("material-not-dyeable"), materialName));
+            Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("material-not-dyeable"), materialName));
         }
     }
 
     private static void logInvalidItemMeta(String materialName) {
-        Logger.logError(String.format(Bloons.getConfigurationManager().getConfigString("invalid-item-meta"), materialName));
+        Logger.logError(String.format(Bloons.getConfigurationManager().getMessage("invalid-item-meta"), materialName));
     }
 
     private static boolean isBlank(String value) {

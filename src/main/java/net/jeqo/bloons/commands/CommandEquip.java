@@ -48,12 +48,12 @@ public class CommandEquip extends Command {
         if (overrides == null) return false;
 
         if (selection.singleType() != null && !player.hasPermission(selection.singleType().getPermission())) {
-            player.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission"));
+            player.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("no-permission"));
             return false;
         }
 
         if (selection.multipartType() != null && !player.hasPermission(selection.multipartType().getPermission())) {
-            player.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission"));
+            player.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("no-permission"));
             return false;
         }
 
@@ -63,8 +63,8 @@ public class CommandEquip extends Command {
             return false;
         }
 
-        String equippedMessage = Bloons.getConfigurationManager().getConfigString("prefix")
-                + String.format(Bloons.getConfigurationManager().getConfigString("equipped"), equippedBalloonName);
+        String equippedMessage = Bloons.getConfigurationManager().getMessage("prefix")
+                + String.format(Bloons.getConfigurationManager().getMessage("equipped"), equippedBalloonName);
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', equippedMessage));
         player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         return false;

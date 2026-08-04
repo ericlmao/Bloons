@@ -161,7 +161,7 @@ public class ConfigConfiguration {
     private static List<File> getBalloonConfigurationFiles() {
         List<File> files = Bloons.getConfigurationManager().getBalloonConfigurationFiles();
         if (files.isEmpty()) {
-            Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("no-configuration-files-found"), getBalloonConfigurationFolder()));
+            Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("no-configuration-files-found"), getBalloonConfigurationFolder()));
         }
         return files;
     }
@@ -169,7 +169,7 @@ public class ConfigConfiguration {
     private static ConfigurationSection getRootSection(FileConfiguration config, File file) {
         ConfigurationSection section = config.getConfigurationSection("");
         if (section == null) {
-            Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("configuration-section-not-found"), file.getPath()));
+            Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("configuration-section-not-found"), file.getPath()));
         }
         return section;
     }
@@ -177,7 +177,7 @@ public class ConfigConfiguration {
     private static String getBalloonType(FileConfiguration config, String fileName, String key) {
         String type = config.getString(key + ".type", BalloonConfiguration.SINGLE_BALLOON_TYPE_IDENTIFIER);
         if (type == null || type.isBlank()) {
-            Logger.logError(String.format(Bloons.getConfigurationManager().getConfigString("balloon-type-not-found"), key, fileName));
+            Logger.logError(String.format(Bloons.getConfigurationManager().getMessage("balloon-type-not-found"), key, fileName));
             return null;
         }
         return type;
@@ -270,7 +270,7 @@ public class ConfigConfiguration {
                     config.getDouble(key + ".tail-particles.speed", 0.01)
             );
         } catch (Exception e) {
-            Logger.logWarning(String.format(Bloons.getConfigurationManager().getConfigString("balloon-process-error"), key, fileName, e));
+            Logger.logWarning(String.format(Bloons.getConfigurationManager().getMessage("balloon-process-error"), key, fileName, e));
             return null;
         }
     }

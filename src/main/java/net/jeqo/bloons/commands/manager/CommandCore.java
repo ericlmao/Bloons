@@ -97,14 +97,14 @@ public class CommandCore implements CommandExecutor {
             if (!(sender instanceof Player player)) return false;
 
             if (!player.hasPermission("bloons.menu")) {
-                String noPermission = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission");
+                String noPermission = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("no-permission");
                 player.sendMessage(ChatColor.translateAlternateColorCodes('&', noPermission));
                 return true;
             }
 
             ArrayList<ItemStack> items = buildMenuItems(player);
             if (items == null) {
-                Logger.logError(ChatColor.translateAlternateColorCodes('&', Bloons.getConfigurationManager().getConfigString("no-balloons-registered")));
+                Logger.logError(Bloons.getConfigurationManager().getMessage("no-balloons-registered"));
                 return false;
             }
             new BalloonMenu(items, Bloons.getConfigurationManager().getConfigString("menu-title"), player);
@@ -121,13 +121,13 @@ public class CommandCore implements CommandExecutor {
             if (currentCommand.getCommandAliases().contains(subcommand)) {
                 // Check if the sender has the permission to execute the command
                 if (!meetsRequirements(currentCommand, sender)) {
-                    sender.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("no-permission"));
+                    sender.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("no-permission"));
                     return false;
                 }
 
                 // Check if the command is disabled
                 if (currentCommand.getRequiredAccess() == CommandAccess.DISABLED) {
-                    sender.sendMessage(Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("command-disabled"));
+                    sender.sendMessage(Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("command-disabled"));
                     return false;
                 }
 

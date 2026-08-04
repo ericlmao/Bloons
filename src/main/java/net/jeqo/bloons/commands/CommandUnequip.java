@@ -40,7 +40,7 @@ public class CommandUnequip extends Command {
 
         // If the player doesn't have any balloons equipped, send a message to the player
         if (singleBalloon == null && multipartBalloon == null) {
-            String notEquippedMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("not-equipped");
+            String notEquippedMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("not-equipped");
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', notEquippedMessage));
             return false;
         }
@@ -56,7 +56,7 @@ public class CommandUnequip extends Command {
             MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
         }
 
-        String unequipSuccessfulMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("unequipped");
+        String unequipSuccessfulMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("unequipped");
         player.sendMessage(ChatColor.translateAlternateColorCodes('&', unequipSuccessfulMessage));
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH, 1, 1);
         return false;

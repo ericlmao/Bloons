@@ -42,7 +42,7 @@ public class CommandForceEquip extends Command {
         Player player = Bukkit.getPlayer(args[0]);
 
         if (player == null) {
-            String playerNotFoundMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("player-not-found");
+            String playerNotFoundMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("player-not-found");
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', playerNotFoundMessage));
             return false;
         }
@@ -54,14 +54,14 @@ public class CommandForceEquip extends Command {
         }
 
         if (Bloons.getBalloonCore().containsSingleBalloon(args[1]) && Bloons.getBalloonCore().containsMultipartBalloon(args[1])) {
-            String balloonNotFoundMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("balloon-not-found");
+            String balloonNotFoundMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("balloon-not-found");
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', balloonNotFoundMessage));
             return false;
         }
 
         String equippedBalloonName = BalloonEquipService.equip(player, selection, overrides);
-        String equippedMessage = Bloons.getConfigurationManager().getConfigString("prefix")
-                + String.format(Bloons.getConfigurationManager().getConfigString("equipped"), equippedBalloonName);
+        String equippedMessage = Bloons.getConfigurationManager().getMessage("prefix")
+                + String.format(Bloons.getConfigurationManager().getMessage("equipped"), equippedBalloonName);
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', equippedMessage));
         return false;
     }

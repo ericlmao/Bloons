@@ -44,8 +44,8 @@ public final class BalloonColorOverrideParser {
 
         String color = args[index];
         if (!color.matches(HEX_REGEX)) {
-            String invalidHex = Bloons.getConfigurationManager().getConfigString("prefix")
-                    + String.format(Bloons.getConfigurationManager().getConfigString("invalid-hex-code"), color);
+            String invalidHex = Bloons.getConfigurationManager().getMessage("prefix")
+                    + String.format(Bloons.getConfigurationManager().getMessage("invalid-hex-code"), color);
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', invalidHex));
             return null;
         }

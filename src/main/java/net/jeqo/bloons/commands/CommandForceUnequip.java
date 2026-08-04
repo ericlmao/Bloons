@@ -5,7 +5,6 @@ import net.jeqo.bloons.balloon.multipart.balloon.MultipartBalloon;
 import net.jeqo.bloons.balloon.single.SingleBalloon;
 import net.jeqo.bloons.commands.manager.Command;
 import net.jeqo.bloons.commands.manager.types.CommandPermission;
-import net.jeqo.bloons.message.Languages;
 import net.jeqo.bloons.management.SingleBalloonManagement;
 import net.jeqo.bloons.management.MultipartBalloonManagement;
 import org.bukkit.Bukkit;
@@ -37,7 +36,7 @@ public class CommandForceUnequip extends Command {
 
         // If the specified player doesn't exist, send a message to the sender
         if (player == null) {
-            String playerNotFoundMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("player-not-found");
+            String playerNotFoundMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("player-not-found");
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', playerNotFoundMessage));
             return false;
         }
@@ -47,7 +46,7 @@ public class CommandForceUnequip extends Command {
 
         // If the player doesn't have any balloons equipped, send a message to the sender
         if (singleBalloon == null && multipartBalloon == null) {
-            String notEquippedMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("not-equipped");
+            String notEquippedMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("not-equipped");
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', notEquippedMessage));
             return false;
         }
@@ -61,7 +60,7 @@ public class CommandForceUnequip extends Command {
             MultipartBalloonManagement.removePlayerBalloon(player.getUniqueId());
         }
 
-        String unequipSuccessfulMessage = Bloons.getConfigurationManager().getConfigString("prefix") + Bloons.getConfigurationManager().getConfigString("unequipped");
+        String unequipSuccessfulMessage = Bloons.getConfigurationManager().getMessage("prefix") + Bloons.getConfigurationManager().getMessage("unequipped");
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', unequipSuccessfulMessage));
         return false;
     }
